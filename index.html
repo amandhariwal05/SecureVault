@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Encryptor & Decryptor</title>
+    <link rel="shortcut icon" href="Favicon.png" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Segoe+UI:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>File Encryptor & Decryptor</h1>
+      <div class="file-input-wrapper">
+        <input type="file" id="file-input" />
+        <label class="file-input-button" for="file-input">Choose File</label>
+      </div>
+      <input
+        type="text"
+        id="key-input"
+        placeholder="Enter your encryption key"
+      />
+      <br />
+      <button id="encrypt-btn">Encrypt</button>
+      <button id="decrypt-btn">Decrypt</button>
+      <div id="output"></div>
+      <div id="file-name-display"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
