@@ -2,6 +2,16 @@ let fileData = null;
 let fileName = null;
 let fileExtension = null;
 
+const themeToggle = document.getElementById("theme-toggle");
+const themeIcon = document.getElementById("theme-icon");
+
+themeToggle.addEventListener("click", () => {
+  const body = document.body;
+  body.classList.toggle("light-theme");
+
+  themeIcon.textContent = body.classList.contains("light-theme") ? "☀️" : "🌙";
+});
+
 document.getElementById("file-input").addEventListener("change", (event) => {
   const file = event.target.files[0];
   fileName = file.name.split(".").slice(0, -1).join(".");
@@ -66,12 +76,9 @@ async function decryptFile() {
   }
 
   const decryptedData = xorEncryptDecrypt(fileData, key);
-
-  let decryptedFileName = `${fileName}_Decrypted.${fileExtension}`;
-  if (fileName.includes("_Encrypted")) {
-    decryptedFileName =
-      fileName.replace("_Encrypted", "_Decrypted") + `.${fileExtension}`;
-  }
+  const decryptedFileName = fileName.includes("_Encrypted")
+    ? fileName.replace("_Encrypted", "_Decrypted") + `.${fileExtension}`
+    : `${fileName}_Decrypted.${fileExtension}`;
 
   const blob = new Blob([decryptedData], {
     type: "application/octet-stream",
