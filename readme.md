@@ -1,6 +1,9 @@
 File Encryption & Decryption Web App
 This is a web application that allows users to securely encrypt and decrypt files using the XOR encryption algorithm. The app provides an easy way to protect file contents by applying a simple XOR-based encryption technique, where the key is used to encrypt and decrypt the file data.
 
+Deployed Link--
+https://file-encryptor-and-decryptor.vercel.app
+
 Features--
 1.Upload a file for encryption.
 2.Enter an encryption key.
