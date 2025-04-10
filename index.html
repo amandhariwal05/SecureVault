@@ -3,36 +3,1022 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>File Encryptor & Decryptor</title>
+    <title>SecureVault - File Encryption Tool</title>
     <link rel="shortcut icon" href="Favicon.png" type="image/x-icon" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Segoe+UI:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      :root {
+        --primary: #4f46e5;
+        --primary-light: #6366f1;
+        --primary-dark: #4338ca;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+
+        /* Light Theme Variables */
+        --background-light: #f9fafb;
+        --text-light: #1f2937;
+        --text-muted-light: #6b7280;
+        --border-light: #e5e7eb;
+        --card-light: #ffffff;
+
+        /* Dark Theme Variables */
+        --background-dark: #111827;
+        --text-dark: #f9fafb;
+        --text-muted-dark: #9ca3af;
+        --border-dark: #374151;
+        --card-dark: #1f2937;
+
+        --radius: 0.5rem;
+        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body.light-theme {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        color: var(--text-light);
+      }
+
+      body.dark-theme {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: var(--text-dark);
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: var(--radius);
+        transition: background-color 0.3s, box-shadow 0.3s;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .light-theme .container {
+        background-color: var(--card-light);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-light);
+      }
+
+      .dark-theme .container {
+        background-color: var(--card-dark);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-dark);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+      }
+
+      .light-theme h1 {
+        color: var(--primary-dark);
+      }
+
+      .dark-theme h1 {
+        color: var(--primary-light);
+      }
+
+      .logo {
+        display: block;
+        margin: 0 auto 1.5rem;
+        height: 4rem;
+        width: 4rem;
+      }
+
+      .light-theme .logo {
+        filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.2));
+      }
+
+      .dark-theme .logo {
+        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+      }
+
+      /* Theme Toggle Switch */
+      .theme-toggle {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: inline-block;
+        z-index: 10;
+      }
+
+      .theme-switch {
+        display: inline-block;
+        height: 34px;
+        position: relative;
+        width: 60px;
+      }
+
+      .theme-switch input {
+        display: none;
+      }
+
+      .slider {
+        background-color: #374151;
+        bottom: 0;
+        cursor: pointer;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transition: 0.4s;
+        border-radius: 34px;
+      }
+
+      .slider:before {
+        background-color: #fff;
+        bottom: 4px;
+        content: "";
+        height: 26px;
+        left: 4px;
+        position: absolute;
+        transition: 0.4s;
+        width: 26px;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--primary);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+
+      .slider:after {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 14px;
+        opacity: 1;
+        transition: 0.4s;
+      }
+
+      input:checked + .slider:after {
+        content: "";
+        left: unset;
+        right: 8px;
+        opacity: 1;
+      }
+
+      /* File Input Styling */
+      .file-input-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .file-input-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px dashed;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .light-theme .file-input-button {
+        border-color: var(--primary-light);
+        background-color: rgba(79, 70, 229, 0.05);
+        color: var(--primary);
+      }
+
+      .dark-theme .file-input-button {
+        border-color: var(--primary);
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary-light);
+      }
+
+      .file-input-button:hover {
+        transform: translateY(-2px);
+      }
+
+      .light-theme .file-input-button:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+      }
+
+      .dark-theme .file-input-button:hover {
+        background-color: rgba(99, 102, 241, 0.2);
+      }
+
+      .file-input-button::before {
+        content: "📁";
+        margin-right: 0.5rem;
+        font-size: 1.25rem;
+      }
+
+      /* Key Input Styling */
+      .key-input-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      #key-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s;
+        box-sizing: border-box;
+      }
+
+      .light-theme #key-input {
+        border-color: var(--border-light);
+        background-color: var(--background-light);
+        color: var(--text-light);
+      }
+
+      .dark-theme #key-input {
+        border-color: var(--border-dark);
+        background-color: rgba(31, 41, 55, 0.8);
+        color: var(--text-dark);
+      }
+
+      #key-input:focus {
+        outline: none;
+      }
+
+      .light-theme #key-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      }
+
+      .dark-theme #key-input:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+      }
+
+      /* Password Strength Indicator */
+      .password-strength {
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 0.5rem;
+        transition: width 0.3s, background-color 0.3s;
+        width: 0;
+      }
+
+      .strength-label {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        text-align: right;
+        transition: color 0.3s;
+      }
+
+      .strength-weak {
+        background-color: var(--danger);
+      }
+
+      .strength-medium {
+        background-color: var(--warning);
+      }
+
+      .strength-strong {
+        background-color: var(--success);
+      }
+
+      /* Button Styling */
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      button {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      button::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.3s;
+      }
+
+      button:hover:not(:disabled)::after {
+        left: 100%;
+      }
+
+      #encrypt-btn {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      #encrypt-btn:hover:not(:disabled) {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+      }
+
+      #decrypt-btn {
+        background-color: var(--text-muted-light);
+        color: white;
+      }
+
+      .light-theme #decrypt-btn {
+        background-color: #64748b;
+      }
+
+      .dark-theme #decrypt-btn {
+        background-color: #475569;
+      }
+
+      #decrypt-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+      }
+
+      .light-theme #decrypt-btn:hover:not(:disabled) {
+        background-color: #475569;
+        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+      }
+
+      .dark-theme #decrypt-btn:hover:not(:disabled) {
+        background-color: #64748b;
+        box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4);
+      }
+
+      /* Output Area Styling */
+      #output {
+        margin-top: 0.7rem;
+        padding: 0.3rem;
+        border-radius: var(--radius);
+        min-height: 3rem;
+        transition: background-color 0.3s, border 0.3s;
+        overflow-wrap: break-word;
+      }
+
+      .light-theme #output {
+        color: var(--text-light);
+      }
+
+      .dark-theme #output {
+        color: var(--text-dark);
+      }
+
+      /* File Information Display */
+      #file-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: var(--radius);
+        display: none;
+      }
+
+      .light-theme #file-info {
+        background-color: rgba(79, 70, 229, 0.05);
+        border: 1px solid rgba(79, 70, 229, 0.1);
+      }
+
+      .dark-theme #file-info {
+        background-color: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+
+      .file-info-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem 1rem;
+        align-items: center;
+      }
+
+      .file-info-label {
+        font-weight: 500;
+      }
+
+      .light-theme .file-info-label {
+        color: var(--text-muted-light);
+      }
+
+      .dark-theme .file-info-label {
+        color: var(--text-muted-dark);
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        display: inline-block;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 0.5rem;
+        display: none;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+      }
+
+      .light-theme .notification {
+        background-color: white;
+      }
+
+      .dark-theme .notification {
+        background-color: var(--card-dark);
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-left: 4px solid var(--success);
+      }
+
+      .notification.error {
+        border-left: 4px solid var(--danger);
+      }
+
+      .notification-icon {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+      }
+
+      .notification-message {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+        .container {
+          padding: 1.5rem;
+          width: 95%;
+          margin: 1rem auto;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+
+      footer {
+        margin-top: 2rem;
+        text-align: center;
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+    </style>
   </head>
   <body class="dark-theme">
-    <button id="theme-toggle" class="theme-toggle">
-      <span id="theme-icon">🌙</span>
-    </button>
-    <div class="container">
-      <h1>File Encryptor & Decryptor</h1>
-      <div class="file-input-wrapper">
-        <input type="file" id="file-input" />
-        <label class="file-input-button" for="file-input">Choose File</label>
-      </div>
-      <input
-        type="text"
-        id="key-input"
-        placeholder="Enter your encryption key"
-      />
-      <br />
-      <button id="encrypt-btn">Encrypt</button>
-      <button id="decrypt-btn">Decrypt</button>
-      <div id="output"></div>
-      <div id="file-name-display"></div>
+    <div class="theme-toggle">
+      <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle" />
+        <span class="slider"></span>
+      </label>
     </div>
 
-    <script src="script.js"></script>
+    <div class="container">
+      <svg
+        class="logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        <circle cx="12" cy="16" r="1"></circle>
+      </svg>
+
+      <h1>SecureVault Encryption</h1>
+
+      <div class="file-input-wrapper">
+        <input type="file" id="file-input" />
+        <label class="file-input-button" for="file-input"
+          >Choose a file to encrypt or decrypt</label
+        >
+      </div>
+
+      <div class="key-input-wrapper">
+        <input
+          type="password"
+          id="key-input"
+          placeholder="Enter your encryption key"
+        />
+        <div class="password-strength"></div>
+        <div class="strength-label"></div>
+      </div>
+      <div id="output">Select a file and enter an encryption key to begin</div>
+
+      <div class="button-group">
+        <button id="encrypt-btn" disabled>
+          <div class="spinner" id="encrypt-spinner"></div>
+          Encrypt
+        </button>
+        <button id="decrypt-btn" disabled>
+          <div class="spinner" id="decrypt-spinner"></div>
+          Decrypt
+        </button>
+      </div>
+
+      <div id="file-info" style="display: none">
+        <div class="file-info-grid">
+          <span class="file-info-label">File Name:</span>
+          <span id="file-name"></span>
+          <span class="file-info-label">File Size:</span>
+          <span id="file-size"></span>
+          <span class="file-info-label">File Type:</span>
+          <span id="file-type"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      <span class="notification-icon"></span>
+      <span class="notification-message"></span>
+    </div>
+
+    <footer>
+      <p>
+        Secure encryption and decryption tool. Your files never leave your
+        browser.
+      </p>
+    </footer>
+
+    <script>
+      // Theme Toggle Functionality
+      const body = document.body;
+      const themeToggle = document.getElementById("theme-toggle");
+
+      // Check for saved theme preference or use system preference
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        body.className = savedTheme;
+        themeToggle.checked = savedTheme === "light-theme";
+      } else {
+        // Use system preference
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: light)").matches
+        ) {
+          body.className = "light-theme";
+          themeToggle.checked = true;
+        }
+      }
+
+      themeToggle.addEventListener("change", () => {
+        if (themeToggle.checked) {
+          body.classList.replace("dark-theme", "light-theme");
+          localStorage.setItem("theme", "light-theme");
+        } else {
+          body.classList.replace("light-theme", "dark-theme");
+          localStorage.setItem("theme", "dark-theme");
+        }
+      });
+
+      // Elements
+      const fileInput = document.getElementById("file-input");
+      const keyInput = document.getElementById("key-input");
+      const encryptBtn = document.getElementById("encrypt-btn");
+      const decryptBtn = document.getElementById("decrypt-btn");
+      const output = document.getElementById("output");
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+      const fileType = document.getElementById("file-type");
+      const passwordStrength = document.querySelector(".password-strength");
+      const strengthLabel = document.querySelector(".strength-label");
+      const encryptSpinner = document.getElementById("encrypt-spinner");
+      const decryptSpinner = document.getElementById("decrypt-spinner");
+      const notification = document.getElementById("notification");
+
+      let selectedFile = null;
+
+      // File input handler
+      fileInput.addEventListener("change", (e) => {
+        selectedFile = e.target.files[0];
+
+        if (selectedFile) {
+          // Display file information
+          fileName.textContent = selectedFile.name;
+
+          // Format file size
+          const size = selectedFile.size;
+          let formattedSize;
+
+          if (size < 1024) {
+            formattedSize = size + " bytes";
+          } else if (size < 1024 * 1024) {
+            formattedSize = (size / 1024).toFixed(2) + " KB";
+          } else {
+            formattedSize = (size / (1024 * 1024)).toFixed(2) + " MB";
+          }
+
+          fileSize.textContent = formattedSize;
+          fileType.textContent = selectedFile.type || "Unknown";
+
+          fileInfo.style.display = "block";
+          output.textContent =
+            "File selected. Enter a key and choose an operation.";
+
+          // Enable buttons if key is entered
+          if (keyInput.value.length > 0) {
+            encryptBtn.disabled = false;
+            decryptBtn.disabled = false;
+          }
+        } else {
+          fileInfo.style.display = "none";
+          encryptBtn.disabled = true;
+          decryptBtn.disabled = true;
+          output.textContent =
+            "Select a file and enter an encryption key to begin";
+        }
+      });
+
+      // Key strength checker
+      keyInput.addEventListener("input", () => {
+        const key = keyInput.value;
+
+        // Enable/disable buttons based on key and file
+        if (key.length > 0 && selectedFile) {
+          encryptBtn.disabled = false;
+          decryptBtn.disabled = false;
+        } else {
+          encryptBtn.disabled = true;
+          decryptBtn.disabled = true;
+        }
+
+        // Check key strength
+        let strength = 0;
+        let strengthText = "";
+
+        if (key.length > 0) {
+          // Length check
+          if (key.length >= 12) {
+            strength += 1;
+          }
+
+          // Complexity check
+          const hasUpperCase = /[A-Z]/.test(key);
+          const hasLowerCase = /[a-z]/.test(key);
+          const hasDigits = /\d/.test(key);
+          const hasSpecialChars = /[^A-Za-z0-9]/.test(key);
+
+          const complexity = [
+            hasUpperCase,
+            hasLowerCase,
+            hasDigits,
+            hasSpecialChars,
+          ].filter(Boolean).length;
+
+          if (complexity >= 3) {
+            strength += 1;
+          }
+        }
+
+        // Update UI based on strength
+        if (key.length === 0) {
+          passwordStrength.style.width = "0";
+          passwordStrength.className = "password-strength";
+          strengthLabel.textContent = "";
+        } else if (strength === 0) {
+          passwordStrength.style.width = "30%";
+          passwordStrength.className = "password-strength strength-weak";
+          strengthLabel.textContent = "Weak";
+          strengthLabel.style.color = "var(--danger)";
+        } else if (strength === 1) {
+          passwordStrength.style.width = "60%";
+          passwordStrength.className = "password-strength strength-medium";
+          strengthLabel.textContent = "Medium";
+          strengthLabel.style.color = "var(--warning)";
+        } else {
+          passwordStrength.style.width = "100%";
+          passwordStrength.className = "password-strength strength-strong";
+          strengthLabel.textContent = "Strong";
+          strengthLabel.style.color = "var(--success)";
+        }
+      });
+
+      // Helper function to show a notification
+      function showNotification(message, type) {
+        const notificationIcon =
+          notification.querySelector(".notification-icon");
+        const notificationMessage = notification.querySelector(
+          ".notification-message"
+        );
+
+        notification.className = "notification " + type;
+        notificationIcon.textContent = type === "success" ? "✅" : "❌";
+        notificationMessage.textContent = message;
+
+        notification.classList.add("show");
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 3000);
+      }
+
+      // Encrypt file function
+      encryptBtn.addEventListener("click", async () => {
+        if (!selectedFile || !keyInput.value) {
+          showNotification(
+            "Please select a file and enter an encryption key",
+            "error"
+          );
+          return;
+        }
+
+        // Show spinner and disable button
+        encryptSpinner.style.display = "inline-block";
+        encryptBtn.disabled = true;
+        decryptBtn.disabled = true;
+        output.textContent = "Encrypting file...";
+
+        try {
+          // Read the file
+          const fileBuffer = await readFileAsArrayBuffer(selectedFile);
+
+          // Derive a key from the password
+          const key = await deriveKey(keyInput.value);
+
+          // Generate a random initialization vector
+          const iv = crypto.getRandomValues(new Uint8Array(12));
+
+          // Encrypt the file
+          const encryptedData = await encryptData(fileBuffer, key, iv);
+
+          // Combine IV and encrypted data
+          const resultBuffer = new Uint8Array(iv.length + encryptedData.length);
+          resultBuffer.set(iv);
+          resultBuffer.set(encryptedData, iv.length);
+
+          // Create and download encrypted file
+          const encryptedFile = new Blob([resultBuffer], {
+            type: "application/octet-stream",
+          });
+          downloadFile(encryptedFile, selectedFile.name + ".encrypted");
+
+          output.textContent =
+            "Encryption completed! File has been downloaded.";
+          showNotification("File encrypted successfully!", "success");
+        } catch (error) {
+          console.error("Encryption error:", error);
+          output.textContent = "Error encrypting file: " + error.message;
+          showNotification("Encryption failed", "error");
+        } finally {
+          encryptSpinner.style.display = "none";
+          encryptBtn.disabled = false;
+          decryptBtn.disabled = false;
+        }
+      });
+
+      // Decrypt file function
+      decryptBtn.addEventListener("click", async () => {
+        if (!selectedFile || !keyInput.value) {
+          showNotification(
+            "Please select a file and enter the decryption key",
+            "error"
+          );
+          return;
+        }
+
+        // Show spinner and disable button
+        decryptSpinner.style.display = "inline-block";
+        encryptBtn.disabled = true;
+        decryptBtn.disabled = true;
+        output.textContent = "Decrypting file...";
+
+        try {
+          // Read the file
+          const fileBuffer = await readFileAsArrayBuffer(selectedFile);
+
+          // Extract IV (first 12 bytes) and encrypted data
+          const iv = new Uint8Array(fileBuffer.slice(0, 12));
+          const encryptedData = new Uint8Array(fileBuffer.slice(12));
+
+          // Derive the key from the password
+          const key = await deriveKey(keyInput.value);
+
+          // Decrypt the data
+          const decryptedData = await decryptData(encryptedData, key, iv);
+
+          // Create and download decrypted file
+          let outputFileName = selectedFile.name;
+          if (outputFileName.endsWith(".encrypted")) {
+            outputFileName = outputFileName.slice(0, -10); // Remove .encrypted extension
+          }
+
+          const decryptedFile = new Blob([decryptedData], {
+            type: "application/octet-stream",
+          });
+          downloadFile(decryptedFile, outputFileName);
+
+          output.textContent =
+            "Decryption completed! File has been downloaded.";
+          showNotification("File decrypted successfully!", "success");
+        } catch (error) {
+          console.error("Decryption error:", error);
+          output.textContent =
+            "Error decrypting file. Make sure you are using the correct key and a valid encrypted file.";
+          showNotification("Decryption failed", "error");
+        } finally {
+          decryptSpinner.style.display = "none";
+          encryptBtn.disabled = false;
+          decryptBtn.disabled = false;
+        }
+      });
+
+      // File reader function
+      function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            resolve(event.target.result);
+          };
+
+          reader.onerror = (error) => {
+            reject(error);
+          };
+
+          reader.readAsArrayBuffer(file);
+        });
+      }
+
+      // Key derivation function
+      async function deriveKey(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+
+        // Create a key from the password
+        const rawKey = await crypto.subtle.digest("SHA-256", data);
+
+        // Import the raw key
+        return crypto.subtle.importKey(
+          "raw",
+          rawKey,
+          { name: "AES-GCM" },
+          false,
+          ["encrypt", "decrypt"]
+        );
+      }
+
+      // Encrypt data function
+      async function encryptData(data, key, iv) {
+        const encryptedContent = await crypto.subtle.encrypt(
+          {
+            name: "AES-GCM",
+            iv: iv,
+          },
+          key,
+          data
+        );
+
+        return new Uint8Array(encryptedContent);
+      }
+
+      // Decrypt data function
+      async function decryptData(encryptedData, key, iv) {
+        const decryptedContent = await crypto.subtle.decrypt(
+          {
+            name: "AES-GCM",
+            iv: iv,
+          },
+          key,
+          encryptedData
+        );
+
+        return decryptedContent;
+      }
+
+      // File download function
+      function downloadFile(blob, fileName) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // Drag and drop support
+      const fileInputButton = document.querySelector(".file-input-button");
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        fileInputButton.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        fileInputButton.addEventListener(eventName, highlight, false);
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        fileInputButton.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight() {
+        fileInputButton.classList.add("border-primary");
+      }
+
+      function unhighlight() {
+        fileInputButton.classList.remove("border-primary");
+      }
+
+      fileInputButton.addEventListener("drop", handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+          fileInput.files = files;
+          // Trigger the change event
+          const event = new Event("change");
+          fileInput.dispatchEvent(event);
+        }
+      }
+    </script>
   </body>
 </html>
