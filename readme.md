@@ -1,20 +1,51 @@
-File Encryption & Decryption Web App
-This is a web application that allows users to securely encrypt and decrypt files using the XOR encryption algorithm. The app provides an easy way to protect file contents by applying AES-GCM encryption technique, where the key is used to encrypt and decrypt the file data.
+# 🔐 File Encryption & Decryption Web App
 
-AES-GCM is the recommended and standard algorithm used in industry.
+A secure, browser-based application for encrypting and decrypting files using **AES-GCM**, a modern industry-standard encryption algorithm. All cryptographic operations are performed locally in the browser using the **Web Crypto API**, ensuring your files and keys never leave your device.
 
-Deployed Link--
-https://file-encryptor-and-decryptor.vercel.app
+📍 **Live Demo**: [https://file-encryptor-and-decryptor.vercel.app](https://file-encryptor-and-decryptor.vercel.app)
 
-Features--
-1.Upload a file for encryption.
-2.Enter an encryption key.
-3.Download the encrypted file with a modified name (\_Encrypted suffix).
-4.Upload an encrypted file for decryption.
-5.Enter the correct key to decrypt the file.
-6.Download the decrypted file with the suffix \_Decrypted.
+---
 
-Technologies Used--
-1.HTML5
-2.CSS3
-3.JavaScript
+## ✨ Features
+
+- ✅ Upload any file for encryption (supports all file types).
+- 🔑 Enter a passphrase for encryption and decryption.
+- 📥 Download encrypted files with `_Encrypted` suffix.
+- 📁 Upload encrypted files to decrypt.
+- 🔐 Decrypt with the correct passphrase.
+- 📤 Download the original file with `_Decrypted` suffix.
+- 🔒 Fully client-side; no data ever leaves your browser.
+
+---
+
+## 🛠️ Technologies Used
+
+- **HTML5** – Structure and file inputs  
+- **CSS3** – Styling and responsive design  
+- **JavaScript (Vanilla)** – Core logic, file handling, encryption  
+- **Web Crypto API** – AES-GCM encryption, PBKDF2 key derivation
+
+---
+
+## 🔐 Cryptographic Details
+
+- **Algorithm**: AES-GCM (256-bit)
+- **Key Derivation**: PBKDF2 with SHA-256
+- **IV**: Randomly generated for each encryption
+- **Authentication Tag**: Ensures data integrity
+- **All operations performed locally** in the browser
+
+---
+
+## 📦 How It Works
+
+1. Upload a file  
+2. Enter a key (passphrase)  
+3. File is encrypted using AES-GCM  
+4. Download the encrypted file  
+5. Upload an encrypted file and enter the key to decrypt it  
+6. Download the decrypted file
+
+> If the key is incorrect, decryption fails.
+
+---
